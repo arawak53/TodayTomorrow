@@ -28,69 +28,44 @@ public class HelloController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         monday.setText("Monday");
         monday.setOnAction(event ->{
-            tuesday.setStyle("");
-            wednesday.setStyle("");
-            thursday.setStyle("");
-            friday.setStyle("");
-            saturday.setStyle("");
-            sunday.setStyle("");
+            disableButtonStyle();
             monday.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
         });
         tuesday.setOnAction(event -> {
-            monday.setStyle("");
-            wednesday.setStyle("");
-            thursday.setStyle("");
-            friday.setStyle("");
-            saturday.setStyle("");
-            sunday.setStyle("");
+            disableButtonStyle();
             tuesday.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
 
 
         });
         wednesday.setOnAction(actionEvent -> {
-            monday.setStyle("");
-            tuesday.setStyle("");
-            thursday.setStyle("");
-            friday.setStyle("");
-            saturday.setStyle("");
-            sunday.setStyle("");
+            disableButtonStyle();
             wednesday.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
         });
         thursday.setOnAction(actionEvent -> {
-            monday.setStyle("");
-            tuesday.setStyle("");
-            wednesday.setStyle("");
-            friday.setStyle("");
-            saturday.setStyle("");
-            sunday.setStyle("");
+            disableButtonStyle();
             thursday.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
         });
         friday.setOnAction(actionEvent -> {
-            monday.setStyle("");
-            tuesday.setStyle("");
-            wednesday.setStyle("");
-            thursday.setStyle("");
-            saturday.setStyle("");
-            sunday.setStyle("");
+            disableButtonStyle();
             friday.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
         });
         saturday.setOnAction(actionEvent -> {
-            monday.setStyle("");
-            tuesday.setStyle("");
-            wednesday.setStyle("");
-            thursday.setStyle("");
-            friday.setStyle("");
-            sunday.setStyle("");
+            disableButtonStyle();
             saturday.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
         });
         sunday.setOnAction(actionEvent -> {
-            monday.setStyle("");
-            tuesday.setStyle("");
-            wednesday.setStyle("");
-            thursday.setStyle("");
-            friday.setStyle("");
-            saturday.setStyle("");
+            disableButtonStyle();
             sunday.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
         });
+
+    }
+    private void disableButtonStyle(){
+        monday.setStyle("");
+        tuesday.setStyle("");
+        wednesday.setStyle("");
+        thursday.setStyle("");
+        friday.setStyle("");
+        saturday.setStyle("");
+        sunday.setStyle("");
     }
 }
