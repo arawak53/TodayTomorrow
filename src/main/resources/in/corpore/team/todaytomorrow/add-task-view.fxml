@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="402.0" prefWidth="603.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="in.corpore.team.todaytomorrow.AddTaskController">
+   <children>
+      <HBox alignment="CENTER_LEFT" layoutX="-4.0" layoutY="-2.0" prefHeight="402.0" prefWidth="767.0">
+         <children>
+            <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
+               <children>
+                  <Label alignment="CENTER" prefHeight="17.0" prefWidth="31.0" text="Дата" textAlignment="CENTER" />
+                  <DatePicker fx:id="fieldDate" prefHeight="37.0" prefWidth="114.0">
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin></DatePicker>
+               </children>
+            </VBox>
+            <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
+               <children>
+                  <Label text="Время" />
+                  <TextField fx:id="fieldTime" prefHeight="37.0" prefWidth="223.0" />
+               </children>
+            </VBox>
+            <VBox alignment="TOP_CENTER" prefHeight="390.0" prefWidth="145.0">
+               <children>
+                  <Label text="Заголовок" />
+                  <TextField fx:id="fieldTitle" prefHeight="37.0" prefWidth="144.0" />
+               </children>
+            </VBox>
+            <VBox alignment="TOP_CENTER">
+               <children>
+                  <Label text="Описание" />
+                  <TextArea fx:id="fieldDescription" prefHeight="129.0" prefWidth="405.0" />
+               </children>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <padding>
+                  <Insets right="10.0" />
+               </padding>
+            </VBox>
+         </children>
+         <padding>
+            <Insets left="10.0" top="10.0" />
+         </padding>
+      </HBox>
+      <Button fx:id="buttonSave" mnemonicParsing="false" prefHeight="37.0" prefWidth="52.0" text="Save" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="10.0" />
+   </children>
+</AnchorPane>
