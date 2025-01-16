@@ -5,8 +5,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
+import javafx.scene.layout.TilePane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -91,6 +91,15 @@ public class MainController implements Initializable {
             stage.setScene(scene);
             stage.show();
         });
+        ContextMenu contextMenu = new ContextMenu();
+        MenuItem menuItem1 = new MenuItem("delite");
+        MenuItem menuItem2 = new MenuItem("Edit");
+        MenuItem menuItem3 = new MenuItem("Duplicate");
+        listTaskView.setContextMenu(contextMenu);
+        contextMenu.getItems().add(menuItem1);
+        contextMenu.getItems().add(menuItem2);
+        contextMenu.getItems().add(menuItem3);
+
     }
     private void disableButtonStyle(){
         monday.setStyle("");
@@ -109,5 +118,6 @@ public class MainController implements Initializable {
         listTaskView.setItems(FXCollections.observableArrayList(textList));
 
     }
+
 
 }
