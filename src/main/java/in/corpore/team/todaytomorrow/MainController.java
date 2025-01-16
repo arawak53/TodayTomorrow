@@ -1,6 +1,8 @@
 package in.corpore.team.todaytomorrow;
 
 import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -99,6 +101,16 @@ public class MainController implements Initializable {
         contextMenu.getItems().add(menuItem1);
         contextMenu.getItems().add(menuItem2);
         contextMenu.getItems().add(menuItem3);
+        EventHandler <ActionEvent> hendler = new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                SelectionModel model = listTaskView.getSelectionModel();
+                int selectedIndex = model.getSelectedIndex();
+                listTask.remove(selectedIndex);
+                updateTaskList();
+            }
+        };
+        menuItem1.setOnAction(hendler);
 
     }
     private void disableButtonStyle(){
