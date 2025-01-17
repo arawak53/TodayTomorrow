@@ -11,6 +11,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 public class AddTaskController implements Initializable {
+
     private  TaskResult result;
     @FXML
     private Button buttonSave;
@@ -22,6 +23,15 @@ public class AddTaskController implements Initializable {
     private TextField fieldTitle;
     @FXML
     private TextArea fieldDescription;
+
+
+    public void setTask (Task task) {
+         fieldDate.getEditor().setText(task.date);
+         fieldTime.setText(task.time);
+         fieldTitle.setText(task.title);
+         fieldDescription.setText(task.description);
+
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {

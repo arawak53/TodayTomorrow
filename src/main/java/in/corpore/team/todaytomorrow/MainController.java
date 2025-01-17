@@ -38,10 +38,10 @@ public class MainController implements Initializable {
     @FXML
     private ListView<String> listTaskView;
 
-
+    private int editingTaskIndex = -1;
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        monday.setOnAction(event ->{
+        monday.setOnAction(event -> {
             disableButtonStyle();
             monday.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
         });
@@ -71,27 +71,10 @@ public class MainController implements Initializable {
             disableButtonStyle();
             sunday.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
         });
-        plus.setOnAction(actionEvent -> {
-            FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("add-task-view.fxml"));
 
-            Scene scene = null;
-            try {
-                scene = new Scene(fxmlLoader.load(), 770, 240);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            AddTaskController controller = fxmlLoader.getController();
-            controller.setTaskResult(new TaskResult() {
-                @Override
-                public void onResult(Task task) {
-                    listTask.add(task);
-                    updateTaskList();
-                }
-            });
-            Stage stage = new Stage();
-            stage.setTitle("TodayTomorrow!");
-            stage.setScene(scene);
-            stage.show();
+
+        plus.setOnAction(actionEvent -> {
+            openWindows(false);
         });
         ContextMenu contextMenu = new ContextMenu();
         MenuItem menuItem1 = new MenuItem("delite");
@@ -101,7 +84,8 @@ public class MainController implements Initializable {
         contextMenu.getItems().add(menuItem1);
         contextMenu.getItems().add(menuItem2);
         contextMenu.getItems().add(menuItem3);
-        EventHandler <ActionEvent> hendler = new EventHandler<ActionEvent>() {
+
+        EventHandler<ActionEvent> hendler = new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
                 SelectionModel model = listTaskView.getSelectionModel();
@@ -112,8 +96,18 @@ public class MainController implements Initializable {
         };
         menuItem1.setOnAction(hendler);
 
+        EventHandler<ActionEvent> hendlerEdit = new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+
+
+                openWindows(true);
+            }
+        };
+        menuItem2.setOnAction(hendlerEdit);
     }
-    private void disableButtonStyle(){
+
+    private void disableButtonStyle() {
         monday.setStyle("");
         tuesday.setStyle("");
         wednesday.setStyle("");
@@ -122,14 +116,53 @@ public class MainController implements Initializable {
         saturday.setStyle("");
         sunday.setStyle("");
     }
-    private void updateTaskList (){
-        ArrayList <String> textList = new ArrayList<>();
-        for (int i = 0 ;i < listTask.size(); ++i){
-            textList.add(listTask.get(i).date+" | "+listTask.get(i).time+" | "+listTask.get(i).title+" | "+listTask.get(i).description);
+
+    private void updateTaskList() {
+        ArrayList<String> textList = new ArrayList<>();
+        for (int i = 0; i < listTask.size(); ++i) {
+            textList.add(listTask.get(i).date + " | " + listTask.get(i).time + " | " + listTask.get(i).title + " | " + listTask.get(i).description);
         }
         listTaskView.setItems(FXCollections.observableArrayList(textList));
 
     }
 
+    private void openWindows(boolean isEdit) {
+        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("add-task-view.fxml"));
+
+        Scene scene = null;
+        try {
+            scene = new Scene(fxmlLoader.load(), 770, 240);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        AddTaskController controller = fxmlLoader.getController();
+        controller.setTaskResult(new TaskResult() {
+            @Override
+            public void onResult(Task task) {
+                if( editingTaskIndex >= 0){
+                    listTask.set(editingTaskIndex, task);
+                    editingTaskIndex = -1;
+                }
+                else{
+                    listTask.add(task);
+                }
+                updateTaskList();
+            }
+        });
+        if (isEdit) {
+            SelectionModel model = listTaskView.getSelectionModel();
+            editingTaskIndex = model.getSelectedIndex();
+            Task task = listTask.get(model.getSelectedIndex());
+            controller.setTask(task);
+        }
+        else {
+            editingTaskIndex = -1;
+        }
+        Stage stage = new Stage();
+        stage.setTitle("TodayTomorrow!");
+        stage.setScene(scene);
+        stage.show();
+
+    }
 
 }
