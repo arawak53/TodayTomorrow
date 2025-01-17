@@ -105,7 +105,20 @@ public class MainController implements Initializable {
             }
         };
         menuItem2.setOnAction(hendlerEdit);
+        EventHandler<ActionEvent> hendlerDuplicate = new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                SelectionModel model = listTaskView.getSelectionModel();
+                int selectedIndex = model.getSelectedIndex();
+                Task task = listTask.get(selectedIndex);
+                Task task1 = new  Task(task.date, task.time, task.title, task.description);
+                listTask.add(selectedIndex,task1);
+                updateTaskList();
+            }
+        };
+        menuItem3.setOnAction(hendlerDuplicate);
     }
+
 
     private void disableButtonStyle() {
         monday.setStyle("");
