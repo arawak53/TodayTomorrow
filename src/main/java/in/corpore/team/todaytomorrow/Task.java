@@ -1,5 +1,6 @@
 package in.corpore.team.todaytomorrow;
 
+import java.util.Calendar;
 import java.util.Date;
 
 public class Task {
@@ -15,4 +16,11 @@ public class Task {
         this.title = title;
     }
 
+
+    public int getDayOfWeek (){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        int week = calendar.get(Calendar.DAY_OF_WEEK);
+        return week;
+    }
 }
