@@ -8,6 +8,8 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
 import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ResourceBundle;
 
 public class AddTaskController implements Initializable {
@@ -26,7 +28,8 @@ public class AddTaskController implements Initializable {
 
 
     public void setTask (Task task) {
-         fieldDate.getEditor().setText(task.date);
+         SimpleDateFormat dateFormate = new SimpleDateFormat("dd.MM.yyyy");
+         fieldDate.getEditor().setText(dateFormate.format(task.date));
          fieldTime.setText(task.time);
          fieldTitle.setText(task.title);
          fieldDescription.setText(task.description);
@@ -36,12 +39,17 @@ public class AddTaskController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         buttonSave.setOnAction(event -> {
-
+            SimpleDateFormat dateFormate = new SimpleDateFormat("dd.MM.yyyy");
             String date = fieldDate.getEditor().getText();
             String time = fieldTime.getText();
             String title = fieldTitle.getText();
             String description = fieldDescription.getText();
-            Task newtask = new Task(date,time,title,description);
+            Task newtask = null;
+            try {
+                newtask = new Task(dateFormate.parse(date),time,title,description);
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
             result.onResult(newtask);
             buttonSave.getScene().getWindow().hide();
 

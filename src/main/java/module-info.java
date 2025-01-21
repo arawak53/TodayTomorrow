@@ -10,6 +10,7 @@ module in.corpore.team.todaytomorrow {
     requires org.kordamp.bootstrapfx.core;
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
+    requires java.desktop;
 
     opens in.corpore.team.todaytomorrow to javafx.fxml;
     exports in.corpore.team.todaytomorrow;

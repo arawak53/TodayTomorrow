@@ -8,14 +8,18 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.MenuItem;
 import javafx.scene.layout.TilePane;
 import javafx.stage.Stage;
-
 import java.io.IOException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.function.Predicate;
 
 public class MainController implements Initializable {
     private ArrayList<Task> listTask = new ArrayList<>();
@@ -39,36 +43,53 @@ public class MainController implements Initializable {
     private ListView<String> listTaskView;
 
     private int editingTaskIndex = -1;
+
+    private int selectedDayOfWeek ;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         monday.setOnAction(event -> {
+            selectedDayOfWeek = 2;
             disableButtonStyle();
+            updateTaskList();
             monday.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
         });
         tuesday.setOnAction(event -> {
+            selectedDayOfWeek = 3;
             disableButtonStyle();
+            updateTaskList();
             tuesday.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
 
 
         });
         wednesday.setOnAction(actionEvent -> {
+            selectedDayOfWeek = 4;
             disableButtonStyle();
+            updateTaskList();
             wednesday.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
         });
         thursday.setOnAction(actionEvent -> {
+            selectedDayOfWeek = 5;
             disableButtonStyle();
+            updateTaskList();
             thursday.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
         });
         friday.setOnAction(actionEvent -> {
+            selectedDayOfWeek = 6;
             disableButtonStyle();
+            updateTaskList();
             friday.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
         });
         saturday.setOnAction(actionEvent -> {
+            selectedDayOfWeek = 7;
             disableButtonStyle();
+            updateTaskList();
             saturday.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
         });
         sunday.setOnAction(actionEvent -> {
+            selectedDayOfWeek = 1;
             disableButtonStyle();
+            updateTaskList();
             sunday.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
         });
 
@@ -89,17 +110,40 @@ public class MainController implements Initializable {
             @Override
             public void handle(ActionEvent actionEvent) {
                 SelectionModel model = listTaskView.getSelectionModel();
+                List<Task> filteredTaskList =  listTask.stream().filter(new Predicate<Task>() {
+                    @Override
+                    public boolean test(Task task) {
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTime(task.date);
+                        int week = calendar.get(Calendar.DAY_OF_WEEK);
+                        return week == selectedDayOfWeek;
+                    }
+                }).toList();
                 int selectedIndex = model.getSelectedIndex();
-                listTask.remove(selectedIndex);
+                Task task = filteredTaskList.get(selectedIndex);
+                listTask.remove(task);
                 updateTaskList();
             }
         };
         menuItem1.setOnAction(hendler);
 
         EventHandler<ActionEvent> hendlerEdit = new EventHandler<ActionEvent>() {
+
             @Override
             public void handle(ActionEvent actionEvent) {
-
+                SelectionModel model = listTaskView.getSelectionModel();
+                List<Task> filteredTaskList =  listTask.stream().filter(new Predicate<Task>() {
+                    @Override
+                    public boolean test(Task task) {
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTime(task.date);
+                        int week = calendar.get(Calendar.DAY_OF_WEEK);
+                        return week == selectedDayOfWeek;
+                    }
+                }).toList();
+                int selectedIndex = model.getSelectedIndex();
+                Task task = filteredTaskList.get(selectedIndex);
+                editingTaskIndex = listTask.indexOf(task);
 
                 openWindows(true);
             }
@@ -109,8 +153,18 @@ public class MainController implements Initializable {
             @Override
             public void handle(ActionEvent actionEvent) {
                 SelectionModel model = listTaskView.getSelectionModel();
+                List<Task> filteredTaskList =  listTask.stream().filter(new Predicate<Task>() {
+                    @Override
+                    public boolean test(Task task) {
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTime(task.date);
+                        int week = calendar.get(Calendar.DAY_OF_WEEK);
+                        return week == selectedDayOfWeek;
+                    }
+                }).toList();
+
                 int selectedIndex = model.getSelectedIndex();
-                Task task = listTask.get(selectedIndex);
+                Task task = filteredTaskList.get(selectedIndex);
                 Task task1 = new  Task(task.date, task.time, task.title, task.description);
                 listTask.add(selectedIndex,task1);
                 updateTaskList();
@@ -132,8 +186,18 @@ public class MainController implements Initializable {
 
     private void updateTaskList() {
         ArrayList<String> textList = new ArrayList<>();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
         for (int i = 0; i < listTask.size(); ++i) {
-            textList.add(listTask.get(i).date + " | " + listTask.get(i).time + " | " + listTask.get(i).title + " | " + listTask.get(i).description);
+            Task task = listTask.get(i);
+            String dateInText =dateFormat.format(task.date);
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(task.date);
+            int week = calendar.get(Calendar.DAY_OF_WEEK);
+            if (selectedDayOfWeek == week){
+                textList.add(dateInText + " | " + task.time + " | " + task.title + " | " + task.description);
+            }
+
+
         }
         listTaskView.setItems(FXCollections.observableArrayList(textList));
 
@@ -163,9 +227,8 @@ public class MainController implements Initializable {
             }
         });
         if (isEdit) {
-            SelectionModel model = listTaskView.getSelectionModel();
-            editingTaskIndex = model.getSelectedIndex();
-            Task task = listTask.get(model.getSelectedIndex());
+
+            Task task = listTask.get(editingTaskIndex);
             controller.setTask(task);
         }
         else {
