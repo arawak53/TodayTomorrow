@@ -11,6 +11,7 @@ module in.corpore.team.todaytomorrow {
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
     requires java.desktop;
+    requires java.net.http;
 
     opens in.corpore.team.todaytomorrow to javafx.fxml;
     exports in.corpore.team.todaytomorrow;

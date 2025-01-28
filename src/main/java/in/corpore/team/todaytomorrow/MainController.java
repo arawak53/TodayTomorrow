@@ -13,7 +13,12 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.layout.TilePane;
 import javafx.stage.Stage;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -41,6 +46,8 @@ public class MainController implements Initializable {
     private Button plus;
     @FXML
     private ListView<String> listTaskView;
+    @FXML
+    private Button getTask;
 
     private int editingTaskIndex = -1;
 
@@ -96,6 +103,26 @@ public class MainController implements Initializable {
         plus.setOnAction(actionEvent -> {
             openWindows(false);
         });
+
+        getTask.setOnAction(actionEvent -> {
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("http://91.211.14.76:9090/tasks"))
+                    .GET()
+                    .build();
+                try {
+                    HttpResponse <String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+                    System.out.println("код ответа" +response.statusCode());
+                    System.out.println("Ответ от сервера: \n" +response.body() );
+
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
+
+        });
+
+
         ContextMenu contextMenu = new ContextMenu();
         MenuItem menuItem1 = new MenuItem("delite");
         MenuItem menuItem2 = new MenuItem("Edit");
