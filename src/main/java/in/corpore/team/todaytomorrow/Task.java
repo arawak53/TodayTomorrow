@@ -23,4 +23,9 @@ public class Task {
         int week = calendar.get(Calendar.DAY_OF_WEEK);
         return week;
     }
+
+    @Override
+    public String toString() {
+        return "Date: "+ date + ", Time: " + time + ", Description: "+ description + ", Title " + title + "\n";
+    }
 }

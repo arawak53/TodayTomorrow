@@ -1,5 +1,7 @@
 package in.corpore.team.todaytomorrow;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -110,14 +112,22 @@ public class MainController implements Initializable {
                     .uri(URI.create("http://91.211.14.76:9090/tasks"))
                     .GET()
                     .build();
+
+
                 try {
                     HttpResponse <String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
                     System.out.println("код ответа" +response.statusCode());
                     System.out.println("Ответ от сервера: \n" +response.body() );
-
+                    Gson gson = new Gson();
+                    ArrayList<Task> listTask1  = gson.fromJson(response.body(), new TypeToken<ArrayList<Task>>(){}.getType());
+                    System.out.println("Вывод на консоль: " + listTask1);
+                    listTask.clear();
+                    listTask.addAll(listTask1);
+                    updateTaskList();
                 }catch (Exception e){
                     e.printStackTrace();
                 }
+
 
 
         });

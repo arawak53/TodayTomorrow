@@ -12,6 +12,7 @@ module in.corpore.team.todaytomorrow {
     requires com.almasb.fxgl.all;
     requires java.desktop;
     requires java.net.http;
+    requires com.google.gson;
 
     opens in.corpore.team.todaytomorrow to javafx.fxml;
     exports in.corpore.team.todaytomorrow;
