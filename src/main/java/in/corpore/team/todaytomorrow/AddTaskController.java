@@ -47,6 +47,9 @@ public class AddTaskController implements Initializable {
             Task newtask = null;
             try {
                 newtask = new Task(dateFormate.parse(date),time,title,description);
+
+
+
             } catch (ParseException e) {
                 throw new RuntimeException(e);
             }

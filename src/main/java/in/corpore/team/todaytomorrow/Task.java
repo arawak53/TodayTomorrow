@@ -8,6 +8,7 @@ public class Task {
     public String time;
     public String title;
     public String description;
+    public Integer id;
 
     Task (Date date, String time, String title, String description) {
         this.date = date;

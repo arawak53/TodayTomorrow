@@ -1,6 +1,7 @@
 package in.corpore.team.todaytomorrow;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -151,6 +152,7 @@ public class MainController implements Initializable {
                 Task task = filteredTaskList.get(selectedIndex);
                 listTask.remove(task);
                 updateTaskList();
+
             }
         };
         menuItem1.setOnAction(hendler);
@@ -237,6 +239,28 @@ public class MainController implements Initializable {
                     listTask.add(task);
                 }
                 updateTaskList();
+
+                Gson gson = new GsonBuilder()
+                        .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+                        .create();
+
+                // Преобразуем объект Task в JSON
+                String jsonData = gson.toJson(task);
+
+                HttpClient client1 = HttpClient.newBuilder().build();
+                HttpRequest  request1 = HttpRequest.newBuilder()
+
+                        .uri (URI.create("http://91.211.14.76:9090/tasks"))
+                        .header("Content-Type", "application/json")
+                        .POST(HttpRequest.BodyPublishers.ofString(jsonData))
+                        .build();
+                try {
+                    HttpResponse<String> response = client1.send(request1, HttpResponse.BodyHandlers.ofString());
+                    System.out.println("Код ответа: " + response.statusCode());
+                    System.out.println("Ответ от сервера: " + response.body());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
         if (isEdit) {
