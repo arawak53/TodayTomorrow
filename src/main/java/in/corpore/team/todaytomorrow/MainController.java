@@ -15,6 +15,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.TilePane;
 import javafx.stage.Stage;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
@@ -54,7 +55,7 @@ public class MainController implements Initializable {
 
     private int editingTaskIndex = -1;
 
-    private int selectedDayOfWeek ;
+    private int selectedDayOfWeek;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -115,20 +116,20 @@ public class MainController implements Initializable {
                     .build();
 
 
-                try {
-                    HttpResponse <String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-                    System.out.println("код ответа" +response.statusCode());
-                    System.out.println("Ответ от сервера: \n" +response.body() );
-                    Gson gson = new Gson();
-                    ArrayList<Task> listTask1  = gson.fromJson(response.body(), new TypeToken<ArrayList<Task>>(){}.getType());
-                    System.out.println("Вывод на консоль: " + listTask1);
-                    listTask.clear();
-                    listTask.addAll(listTask1);
-                    updateTaskList();
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-
+            try {
+                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+                System.out.println("код ответа" + response.statusCode());
+                System.out.println("Ответ от сервера: \n" + response.body());
+                Gson gson = new Gson();
+                ArrayList<Task> listTask1 = gson.fromJson(response.body(), new TypeToken<ArrayList<Task>>() {
+                }.getType());
+                System.out.println("Вывод на консоль: " + listTask1);
+                listTask.clear();
+                listTask.addAll(listTask1);
+                updateTaskList();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
 
         });
@@ -146,7 +147,7 @@ public class MainController implements Initializable {
             @Override
             public void handle(ActionEvent actionEvent) {
 
-                List<Task> filteredTaskList =  filterTaskSelectedofWeek();
+                List<Task> filteredTaskList = filterTaskSelectedofWeek();
                 SelectionModel model = listTaskView.getSelectionModel();
                 int selectedIndex = model.getSelectedIndex();
                 Task task = filteredTaskList.get(selectedIndex);
@@ -163,23 +164,34 @@ public class MainController implements Initializable {
             public void handle(ActionEvent actionEvent) {
                 openWindows(true);
             }
+
+
         };
+
+
+
         menuItem2.setOnAction(hendlerEdit);
         EventHandler<ActionEvent> hendlerDuplicate = new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                List<Task> filteredTaskList =  filterTaskSelectedofWeek();
+                List<Task> filteredTaskList = filterTaskSelectedofWeek();
                 SelectionModel model = listTaskView.getSelectionModel();
                 int selectedIndex = model.getSelectedIndex();
                 Task task = filteredTaskList.get(selectedIndex);
-                Task task1 = new  Task(task.date, task.time, task.title, task.description);
-                listTask.add(selectedIndex,task1);
+                Task task1 = new Task(task.date, task.time, task.title, task.description);
+                listTask.add(selectedIndex, task1);
                 updateTaskList();
+
+
+
             }
+
+
         };
         menuItem3.setOnAction(hendlerDuplicate);
     }
-    private List<Task> filterTaskSelectedofWeek(){
+
+    private List<Task> filterTaskSelectedofWeek() {
         return listTask.stream()
                 .filter(new Predicate<Task>() {
                     @Override
@@ -206,9 +218,9 @@ public class MainController implements Initializable {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
         for (int i = 0; i < listTask.size(); ++i) {
             Task task = listTask.get(i);
-            String dateInText =dateFormat.format(task.date);
+            String dateInText = dateFormat.format(task.date);
             int week = task.getDayOfWeek();
-            if (selectedDayOfWeek == week){
+            if (selectedDayOfWeek == week) {
                 textList.add(dateInText + " | " + task.time + " | " + task.title + " | " + task.description);
             }
 
@@ -231,47 +243,47 @@ public class MainController implements Initializable {
         controller.setTaskResult(new TaskResult() {
             @Override
             public void onResult(Task task) {
-                if( editingTaskIndex >= 0){
+                if (editingTaskIndex >= 0) {
                     listTask.set(editingTaskIndex, task);
                     editingTaskIndex = -1;
-                }
-                else{
+                } else {
                     listTask.add(task);
+                    Gson gson = new GsonBuilder()
+                            .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+                            .create();
+
+                    // Преобразуем объект Task в JSON
+                    String jsonData = gson.toJson(task);
+
+                    HttpClient client1 = HttpClient.newBuilder().build();
+                    HttpRequest request1 = HttpRequest.newBuilder()
+
+                            .uri(URI.create("http://91.211.14.76:9090/tasks"))
+                            .header("Content-Type", "application/json")
+                            .POST(HttpRequest.BodyPublishers.ofString(jsonData))
+                            .build();
+                    try {
+                        HttpResponse<String> response = client1.send(request1, HttpResponse.BodyHandlers.ofString());
+                        System.out.println("Код ответа: " + response.statusCode());
+                        System.out.println("Ответ от сервера: " + response.body());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
                 updateTaskList();
-
-                Gson gson = new GsonBuilder()
-                        .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-                        .create();
-
-                // Преобразуем объект Task в JSON
-                String jsonData = gson.toJson(task);
-
-                HttpClient client1 = HttpClient.newBuilder().build();
-                HttpRequest  request1 = HttpRequest.newBuilder()
-
-                        .uri (URI.create("http://91.211.14.76:9090/tasks"))
-                        .header("Content-Type", "application/json")
-                        .POST(HttpRequest.BodyPublishers.ofString(jsonData))
-                        .build();
-                try {
-                    HttpResponse<String> response = client1.send(request1, HttpResponse.BodyHandlers.ofString());
-                    System.out.println("Код ответа: " + response.statusCode());
-                    System.out.println("Ответ от сервера: " + response.body());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
             }
         });
         if (isEdit) {
-            List<Task> filteredTaskList =  filterTaskSelectedofWeek();
+            List<Task> filteredTaskList = filterTaskSelectedofWeek();
             SelectionModel model = listTaskView.getSelectionModel();
             int selectedIndex = model.getSelectedIndex();
             Task task = filteredTaskList.get(selectedIndex);
             editingTaskIndex = listTask.indexOf(task);
             controller.setTask(task);
-        }
-        else {
+
+            
+
+        } else {
             editingTaskIndex = -1;
         }
         Stage stage = new Stage();
