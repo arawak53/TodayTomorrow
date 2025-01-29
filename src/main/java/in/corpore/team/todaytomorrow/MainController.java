@@ -159,7 +159,7 @@ public class MainController implements Initializable {
 
                 int taskId = task.id;
 
-                URI uri = URI.create("http://91.211.14.76:9090/tasks/"+ taskId);
+                URI uri = URI.create("http://91.211.14.76:9090/tasks/" + taskId);
 
                 HttpClient client = HttpClient.newBuilder().build();
                 HttpRequest deletedRequest = HttpRequest.newBuilder()
@@ -168,7 +168,7 @@ public class MainController implements Initializable {
                         .DELETE()
                         .build();
                 try {
-                    HttpResponse <String> deletedResponse = client.send(deletedRequest, HttpResponse.BodyHandlers.ofString());
+                    HttpResponse<String> deletedResponse = client.send(deletedRequest, HttpResponse.BodyHandlers.ofString());
                     System.out.println("Код ответа: " + deletedResponse.statusCode());
                     System.out.println("Ответ от сервера: " + deletedResponse.body());
                 } catch (Exception e) {
@@ -201,6 +201,31 @@ public class MainController implements Initializable {
                 Task task1 = new Task(task.date, task.time, task.title, task.description);
                 listTask.add(selectedIndex, task1);
                 updateTaskList();
+
+
+
+
+                Gson gson = new GsonBuilder()
+                        .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+                        .create();
+                String jsonCope = gson.toJson(task1);
+                URI uri = URI.create("http://91.211.14.76:9090/tasks");
+
+                HttpClient client = HttpClient.newBuilder().build();
+                HttpRequest requestCopy = HttpRequest.newBuilder()
+                .uri(uri)
+                        .header("Content-Type", "application/json")
+                        .POST(HttpRequest.BodyPublishers.ofString(jsonCope))
+                        .build();
+
+                try {
+                        HttpResponse <String> response = client.send(requestCopy, HttpResponse.BodyHandlers.ofString());
+                    System.out.println("Код ответа: " + response.statusCode());
+                    System.out.println("Ответ от сервера: " + response.body());
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+
 
 
             }
