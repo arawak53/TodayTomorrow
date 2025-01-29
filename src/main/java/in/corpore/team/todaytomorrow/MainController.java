@@ -131,7 +131,7 @@ public class MainController implements Initializable {
             openWindows(false);
         });
 
-        
+
 
 
         ContextMenu contextMenu = new ContextMenu();
