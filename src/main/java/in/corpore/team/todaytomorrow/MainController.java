@@ -57,6 +57,7 @@ public class MainController implements Initializable {
 
     private int selectedDayOfWeek;
 
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         monday.setOnAction(event -> {
@@ -169,7 +170,6 @@ public class MainController implements Initializable {
         };
 
 
-
         menuItem2.setOnAction(hendlerEdit);
         EventHandler<ActionEvent> hendlerDuplicate = new EventHandler<ActionEvent>() {
             @Override
@@ -181,7 +181,6 @@ public class MainController implements Initializable {
                 Task task1 = new Task(task.date, task.time, task.title, task.description);
                 listTask.add(selectedIndex, task1);
                 updateTaskList();
-
 
 
             }
@@ -244,10 +243,43 @@ public class MainController implements Initializable {
             @Override
             public void onResult(Task task) {
                 if (editingTaskIndex >= 0) {
-                    listTask.set(editingTaskIndex, task);
+                    int taskId = listTask.get(editingTaskIndex).id;
+                    Gson gson1 = new GsonBuilder()
+                            .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+                            .create();
+                    Task updatedTask = new Task(task.date, task.time, task.title, task.description);
+                    updatedTask.id = taskId;
+                    String jsonData2 = gson1.toJson(updatedTask);
+                    URI uri = URI.create("http://91.211.14.76:9090/tasks");
+
+                    HttpClient client2 = HttpClient.newBuilder().build();
+                    HttpRequest request2 = HttpRequest.newBuilder()
+                            .uri(uri)
+                            .header("Content-Type", "application/json")
+                            .POST(HttpRequest.BodyPublishers.ofString(jsonData2))
+                            .build();
+                    try {
+                        HttpResponse<String> response2 = client2.send(request2, HttpResponse.BodyHandlers.ofString());
+                        System.out.println("Код ответа: " + response2.statusCode());
+                        System.out.println("Ответ от сервера: " + response2.body());
+
+                        if (response2.statusCode() == 200) {
+                            // Обновляем задачу в локальном списке
+                            listTask.set(editingTaskIndex, updatedTask);
+                            updateTaskList(); // Обновляем отображение списка задач
+                            System.out.println("Задача успешно обновлена на сервере.");
+                        } else {
+                            System.out.println("Ошибка при обновлении задачи на сервере.");
+                        }
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
                     editingTaskIndex = -1;
+
+
                 } else {
                     listTask.add(task);
+
                     Gson gson = new GsonBuilder()
                             .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
                             .create();
@@ -281,7 +313,6 @@ public class MainController implements Initializable {
             editingTaskIndex = listTask.indexOf(task);
             controller.setTask(task);
 
-            
 
         } else {
             editingTaskIndex = -1;
