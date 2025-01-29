@@ -197,7 +197,7 @@ public class MainController implements Initializable {
                 int selectedIndex = model.getSelectedIndex();
                 Task task = filteredTaskList.get(selectedIndex);
                 Task task1 = new Task(task.date, task.time, task.title, task.description);
-                listTask.add(selectedIndex, task1);
+                listTask.add(selectedIndex , task1);
                 updateTaskList();
 
 
@@ -220,6 +220,15 @@ public class MainController implements Initializable {
                         HttpResponse <String> response = client.send(requestCopy, HttpResponse.BodyHandlers.ofString());
                     System.out.println("Код ответа: " + response.statusCode());
                     System.out.println("Ответ от сервера: " + response.body());
+
+                    if (response.statusCode() == 200){
+                        Task createdTask = gson.fromJson(response.body(), Task.class);
+
+                        if (createdTask.id != null){
+                            task1.id = createdTask.id;
+                        }
+                    }
+
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
