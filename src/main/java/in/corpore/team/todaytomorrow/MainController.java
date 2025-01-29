@@ -60,6 +60,28 @@ public class MainController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+         URI uri = URI.create("http://91.211.14.76:9090/tasks");
+
+         HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .GET()
+                .build();
+        try {
+            Gson gson = new Gson();
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            System.out.println("код ответа" + response.statusCode());
+            System.out.println("Ответ от сервера: \n" + response.body());
+
+            ArrayList<Task> listTask1 = gson.fromJson(response.body(), new TypeToken<ArrayList<Task>>() {
+            }.getType());
+            System.out.println("Вывод на консоль: " + listTask1);
+            listTask.clear();
+            listTask.addAll(listTask1);
+            updateTaskList();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         monday.setOnAction(event -> {
             selectedDayOfWeek = 2;
             disableButtonStyle();
@@ -109,31 +131,7 @@ public class MainController implements Initializable {
             openWindows(false);
         });
 
-        getTask.setOnAction(actionEvent -> {
-            HttpClient client = HttpClient.newHttpClient();
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("http://91.211.14.76:9090/tasks"))
-                    .GET()
-                    .build();
-
-
-            try {
-                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-                System.out.println("код ответа" + response.statusCode());
-                System.out.println("Ответ от сервера: \n" + response.body());
-                Gson gson = new Gson();
-                ArrayList<Task> listTask1 = gson.fromJson(response.body(), new TypeToken<ArrayList<Task>>() {
-                }.getType());
-                System.out.println("Вывод на консоль: " + listTask1);
-                listTask.clear();
-                listTask.addAll(listTask1);
-                updateTaskList();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-
-        });
+        
 
 
         ContextMenu contextMenu = new ContextMenu();
