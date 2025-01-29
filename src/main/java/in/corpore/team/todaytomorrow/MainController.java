@@ -152,8 +152,28 @@ public class MainController implements Initializable {
                 SelectionModel model = listTaskView.getSelectionModel();
                 int selectedIndex = model.getSelectedIndex();
                 Task task = filteredTaskList.get(selectedIndex);
+
+
                 listTask.remove(task);
                 updateTaskList();
+
+                int taskId = task.id;
+
+                URI uri = URI.create("http://91.211.14.76:9090/tasks/"+ taskId);
+
+                HttpClient client = HttpClient.newBuilder().build();
+                HttpRequest deletedRequest = HttpRequest.newBuilder()
+                        .uri(uri)
+                        .header("Content-Type", "application/json")
+                        .DELETE()
+                        .build();
+                try {
+                    HttpResponse <String> deletedResponse = client.send(deletedRequest, HttpResponse.BodyHandlers.ofString());
+                    System.out.println("Код ответа: " + deletedResponse.statusCode());
+                    System.out.println("Ответ от сервера: " + deletedResponse.body());
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
 
             }
         };
