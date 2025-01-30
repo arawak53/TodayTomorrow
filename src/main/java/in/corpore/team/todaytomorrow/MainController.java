@@ -56,32 +56,14 @@ public class MainController implements Initializable {
     private int editingTaskIndex = -1;
 
     private int selectedDayOfWeek;
-
+    private RestApiController restApiController = new RestApiController();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-         URI uri = URI.create("http://91.211.14.76:9090/tasks");
-
-         HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(uri)
-                .GET()
-                .build();
-        try {
-            Gson gson = new Gson();
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            System.out.println("код ответа" + response.statusCode());
-            System.out.println("Ответ от сервера: \n" + response.body());
-
-            ArrayList<Task> listTask1 = gson.fromJson(response.body(), new TypeToken<ArrayList<Task>>() {
-            }.getType());
-            System.out.println("Вывод на консоль: " + listTask1);
-            listTask.clear();
-            listTask.addAll(listTask1);
-            updateTaskList();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        List<Task> listTask1 = restApiController.getInicialazeControl();
+        listTask.clear();
+        listTask.addAll(listTask1);
+        updateTaskList();
         monday.setOnAction(event -> {
             selectedDayOfWeek = 2;
             disableButtonStyle();
@@ -132,8 +114,6 @@ public class MainController implements Initializable {
         });
 
 
-
-
         ContextMenu contextMenu = new ContextMenu();
         MenuItem menuItem1 = new MenuItem("delite");
         MenuItem menuItem2 = new MenuItem("Edit");
@@ -151,31 +131,15 @@ public class MainController implements Initializable {
                 int selectedIndex = model.getSelectedIndex();
                 Task task = filteredTaskList.get(selectedIndex);
 
+                restApiController.getDelit(task.id);
 
                 listTask.remove(task);
                 updateTaskList();
 
-                int taskId = task.id;
-
-                URI uri = URI.create("http://91.211.14.76:9090/tasks/" + taskId);
-
-                HttpClient client = HttpClient.newBuilder().build();
-                HttpRequest deletedRequest = HttpRequest.newBuilder()
-                        .uri(uri)
-                        .header("Content-Type", "application/json")
-                        .DELETE()
-                        .build();
-                try {
-                    HttpResponse<String> deletedResponse = client.send(deletedRequest, HttpResponse.BodyHandlers.ofString());
-                    System.out.println("Код ответа: " + deletedResponse.statusCode());
-                    System.out.println("Ответ от сервера: " + deletedResponse.body());
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-
             }
         };
         menuItem1.setOnAction(hendler);
+
 
         EventHandler<ActionEvent> hendlerEdit = new EventHandler<ActionEvent>() {
 
@@ -184,59 +148,36 @@ public class MainController implements Initializable {
                 openWindows(true);
             }
 
-
         };
-
-
         menuItem2.setOnAction(hendlerEdit);
+
+
         EventHandler<ActionEvent> hendlerDuplicate = new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
                 List<Task> filteredTaskList = filterTaskSelectedofWeek();
                 SelectionModel model = listTaskView.getSelectionModel();
                 int selectedIndex = model.getSelectedIndex();
+
+
                 Task task = filteredTaskList.get(selectedIndex);
                 Task task1 = new Task(task.date, task.time, task.title, task.description);
-                listTask.add(selectedIndex , task1);
+
+
+                Task dublicateTask = restApiController.getDublicate(task1);
+
+                if (task1 != dublicateTask) {
+
+                    listTask.add(selectedIndex, dublicateTask);
+                    updateTaskList();
+
+                } else {
+                    System.out.println("Ошибка при получении дубликата!");
+                }
                 updateTaskList();
 
 
-
-
-                Gson gson = new GsonBuilder()
-                        .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-                        .create();
-                String jsonCope = gson.toJson(task1);
-                URI uri = URI.create("http://91.211.14.76:9090/tasks");
-
-                HttpClient client = HttpClient.newBuilder().build();
-                HttpRequest requestCopy = HttpRequest.newBuilder()
-                .uri(uri)
-                        .header("Content-Type", "application/json")
-                        .POST(HttpRequest.BodyPublishers.ofString(jsonCope))
-                        .build();
-
-                try {
-                        HttpResponse <String> response = client.send(requestCopy, HttpResponse.BodyHandlers.ofString());
-                    System.out.println("Код ответа: " + response.statusCode());
-                    System.out.println("Ответ от сервера: " + response.body());
-
-                    if (response.statusCode() == 200){
-                        Task createdTask = gson.fromJson(response.body(), Task.class);
-
-                        if (createdTask.id != null){
-                            task1.id = createdTask.id;
-                        }
-                    }
-
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-
-
-
             }
-
 
         };
         menuItem3.setOnAction(hendlerDuplicate);
@@ -296,65 +237,19 @@ public class MainController implements Initializable {
             public void onResult(Task task) {
                 if (editingTaskIndex >= 0) {
                     int taskId = listTask.get(editingTaskIndex).id;
-                    Gson gson1 = new GsonBuilder()
-                            .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-                            .create();
-                    Task updatedTask = new Task(task.date, task.time, task.title, task.description);
-                    updatedTask.id = taskId;
-                    String jsonData2 = gson1.toJson(updatedTask);
-                    URI uri = URI.create("http://91.211.14.76:9090/tasks");
-
-                    HttpClient client2 = HttpClient.newBuilder().build();
-                    HttpRequest request2 = HttpRequest.newBuilder()
-                            .uri(uri)
-                            .header("Content-Type", "application/json")
-                            .POST(HttpRequest.BodyPublishers.ofString(jsonData2))
-                            .build();
-                    try {
-                        HttpResponse<String> response2 = client2.send(request2, HttpResponse.BodyHandlers.ofString());
-                        System.out.println("Код ответа: " + response2.statusCode());
-                        System.out.println("Ответ от сервера: " + response2.body());
-
-                        if (response2.statusCode() == 200) {
-                            // Обновляем задачу в локальном списке
-                            listTask.set(editingTaskIndex, updatedTask);
-                            updateTaskList(); // Обновляем отображение списка задач
-                            System.out.println("Задача успешно обновлена на сервере.");
-                        } else {
-                            System.out.println("Ошибка при обновлении задачи на сервере.");
-                        }
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
+                    Task editing = restApiController.getEdit(task,taskId);
+                    listTask.set(editingTaskIndex, editing);
+                    updateTaskList();
+                    System.out.println("Задача успешно обновлена на сервере.");
                     editingTaskIndex = -1;
 
 
                 } else {
-                    listTask.add(task);
-
-                    Gson gson = new GsonBuilder()
-                            .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-                            .create();
-
-                    // Преобразуем объект Task в JSON
-                    String jsonData = gson.toJson(task);
-
-                    HttpClient client1 = HttpClient.newBuilder().build();
-                    HttpRequest request1 = HttpRequest.newBuilder()
-
-                            .uri(URI.create("http://91.211.14.76:9090/tasks"))
-                            .header("Content-Type", "application/json")
-                            .POST(HttpRequest.BodyPublishers.ofString(jsonData))
-                            .build();
-                    try {
-                        HttpResponse<String> response = client1.send(request1, HttpResponse.BodyHandlers.ofString());
-                        System.out.println("Код ответа: " + response.statusCode());
-                        System.out.println("Ответ от сервера: " + response.body());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    Task taskNew = restApiController.getCreateNewTask(task);
+                    listTask.add(taskNew);
+                    updateTaskList();
                 }
-                updateTaskList();
+
             }
         });
         if (isEdit) {
