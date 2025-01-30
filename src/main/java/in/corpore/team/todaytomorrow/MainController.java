@@ -60,7 +60,7 @@ public class MainController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        List<Task> listTask1 = restApiController.getInicialazeControl();
+        List<Task> listTask1 = restApiController.getTask();
         listTask.clear();
         listTask.addAll(listTask1);
         updateTaskList();
@@ -131,7 +131,7 @@ public class MainController implements Initializable {
                 int selectedIndex = model.getSelectedIndex();
                 Task task = filteredTaskList.get(selectedIndex);
 
-                restApiController.getDelit(task.id);
+                restApiController.deleteTask(task.id);
 
                 listTask.remove(task);
                 updateTaskList();
@@ -174,7 +174,7 @@ public class MainController implements Initializable {
                 } else {
                     System.out.println("Ошибка при получении дубликата!");
                 }
-                updateTaskList();
+
 
 
             }

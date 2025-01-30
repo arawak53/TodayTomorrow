@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RestApiController {
-    public List<Task> getInicialazeControl() {
+    public List<Task> getTask() {
         URI uri = URI.create("http://91.211.14.76:9090/tasks");
 
         HttpClient client = HttpClient.newHttpClient();
@@ -37,7 +37,7 @@ public class RestApiController {
         }
     }
 
-    public void getDelit(int taskId) {
+    public void deleteTask(int taskId) {
         URI uri = URI.create("http://91.211.14.76:9090/tasks/" + taskId);
 
         HttpClient client = HttpClient.newBuilder().build();
