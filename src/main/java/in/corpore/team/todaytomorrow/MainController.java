@@ -164,7 +164,7 @@ public class MainController implements Initializable {
                 Task task1 = new Task(task.date, task.time, task.title, task.description);
 
 
-                Task dublicateTask = restApiController.getDublicate(task1);
+                Task dublicateTask = restApiController.dublicateTask(task1);
 
                 if (task1 != dublicateTask) {
 
@@ -237,7 +237,7 @@ public class MainController implements Initializable {
             public void onResult(Task task) {
                 if (editingTaskIndex >= 0) {
                     int taskId = listTask.get(editingTaskIndex).id;
-                    Task editing = restApiController.getEdit(task,taskId);
+                    Task editing = restApiController.editTask(task,taskId);
                     listTask.set(editingTaskIndex, editing);
                     updateTaskList();
                     System.out.println("Задача успешно обновлена на сервере.");
@@ -245,7 +245,7 @@ public class MainController implements Initializable {
 
 
                 } else {
-                    Task taskNew = restApiController.getCreateNewTask(task);
+                    Task taskNew = restApiController.сreateNewTask(task);
                     listTask.add(taskNew);
                     updateTaskList();
                 }

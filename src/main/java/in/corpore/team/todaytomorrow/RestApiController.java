@@ -57,7 +57,7 @@ public class RestApiController {
         }
     }
 
-    public Task getDublicate(Task task) {
+    public Task dublicateTask(Task task) {
 
         Gson gson = new GsonBuilder()
                 .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
@@ -95,37 +95,37 @@ public class RestApiController {
     }
 
 
-    public Task getEdit(Task task, int taskId) {
+    public Task editTask(Task task, int taskId) {
         Gson gson1 = new GsonBuilder()
                 .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
                 .create();
         Task updatedTask = new Task(task.date, task.time, task.title, task.description);
         updatedTask.id = taskId;
-        String jsonData2 = gson1.toJson(updatedTask);
+        String jsonData = gson1.toJson(updatedTask);
 
 
         URI uri = URI.create("http://91.211.14.76:9090/tasks");
 
-        HttpClient client2 = HttpClient.newBuilder().build();
-        HttpRequest request2 = HttpRequest.newBuilder()
+        HttpClient client = HttpClient.newBuilder().build();
+        HttpRequest request = HttpRequest.newBuilder()
                 .uri(uri)
                 .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(jsonData2))
+                .POST(HttpRequest.BodyPublishers.ofString(jsonData))
                 .build();
 
         try {
-            HttpResponse<String> response2 = client2.send(request2, HttpResponse.BodyHandlers.ofString());
-            if (response2.statusCode() == 200) {
-                System.out.println("Код ответа: " + response2.statusCode());
-                System.out.println("Ответ от сервера: " + response2.body());
-                return gson1.fromJson(response2.body(), Task.class);
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() == 200) {
+                System.out.println("Код ответа: " + response.statusCode());
+                System.out.println("Ответ от сервера: " + response.body());
+                return gson1.fromJson(response.body(), Task.class);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
         return null;
     }
-    public Task getCreateNewTask (Task task){
+    public Task сreateNewTask (Task task){
         Gson gson = new GsonBuilder()
                 .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
                 .create();
