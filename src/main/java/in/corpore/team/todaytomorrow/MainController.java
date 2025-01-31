@@ -1,8 +1,4 @@
 package in.corpore.team.todaytomorrow;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -13,19 +9,11 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
-import javafx.scene.layout.TilePane;
 import javafx.stage.Stage;
-
 import java.io.IOException;
-import java.net.URI;
 import java.net.URL;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.function.Predicate;
@@ -50,12 +38,11 @@ public class MainController implements Initializable {
     private Button plus;
     @FXML
     private ListView<String> listTaskView;
-    @FXML
-    private Button getTask;
 
     private int editingTaskIndex = -1;
 
     private int selectedDayOfWeek;
+
     private RestApiController restApiController = new RestApiController();
 
     @Override
@@ -75,8 +62,6 @@ public class MainController implements Initializable {
             disableButtonStyle();
             updateTaskList();
             tuesday.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
-
-
         });
         wednesday.setOnAction(actionEvent -> {
             selectedDayOfWeek = 4;
@@ -108,11 +93,9 @@ public class MainController implements Initializable {
             updateTaskList();
             sunday.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
         });
-
         plus.setOnAction(actionEvent -> {
             openWindows(false);
         });
-
 
         ContextMenu contextMenu = new ContextMenu();
         MenuItem menuItem1 = new MenuItem("delite");
@@ -123,23 +106,19 @@ public class MainController implements Initializable {
         contextMenu.getItems().add(menuItem2);
         contextMenu.getItems().add(menuItem3);
         EventHandler<ActionEvent> hendler = new EventHandler<ActionEvent>() {
+
             @Override
             public void handle(ActionEvent actionEvent) {
-
                 List<Task> filteredTaskList = filterTaskSelectedofWeek();
                 SelectionModel model = listTaskView.getSelectionModel();
                 int selectedIndex = model.getSelectedIndex();
                 Task task = filteredTaskList.get(selectedIndex);
-
                 restApiController.deleteTask(task.id);
-
                 listTask.remove(task);
                 updateTaskList();
-
             }
         };
         menuItem1.setOnAction(hendler);
-
 
         EventHandler<ActionEvent> hendlerEdit = new EventHandler<ActionEvent>() {
 
@@ -151,19 +130,14 @@ public class MainController implements Initializable {
         };
         menuItem2.setOnAction(hendlerEdit);
 
-
         EventHandler<ActionEvent> hendlerDuplicate = new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
                 List<Task> filteredTaskList = filterTaskSelectedofWeek();
                 SelectionModel model = listTaskView.getSelectionModel();
                 int selectedIndex = model.getSelectedIndex();
-
-
                 Task task = filteredTaskList.get(selectedIndex);
                 Task task1 = new Task(task.date, task.time, task.title, task.description);
-
-
                 Task dublicateTask = restApiController.dublicateTask(task1);
 
                 if (task1 != dublicateTask) {
@@ -174,11 +148,7 @@ public class MainController implements Initializable {
                 } else {
                     System.out.println("Ошибка при получении дубликата!");
                 }
-
-
-
             }
-
         };
         menuItem3.setOnAction(hendlerDuplicate);
     }
@@ -208,6 +178,7 @@ public class MainController implements Initializable {
     private void updateTaskList() {
         ArrayList<String> textList = new ArrayList<>();
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+
         for (int i = 0; i < listTask.size(); ++i) {
             Task task = listTask.get(i);
             String dateInText = dateFormat.format(task.date);
@@ -215,17 +186,14 @@ public class MainController implements Initializable {
             if (selectedDayOfWeek == week) {
                 textList.add(dateInText + " | " + task.time + " | " + task.title + " | " + task.description);
             }
-
-
         }
         listTaskView.setItems(FXCollections.observableArrayList(textList));
-
     }
 
     private void openWindows(boolean isEdit) {
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("add-task-view.fxml"));
-
         Scene scene = null;
+
         try {
             scene = new Scene(fxmlLoader.load(), 770, 240);
         } catch (IOException e) {
@@ -237,12 +205,11 @@ public class MainController implements Initializable {
             public void onResult(Task task) {
                 if (editingTaskIndex >= 0) {
                     int taskId = listTask.get(editingTaskIndex).id;
-                    Task editing = restApiController.editTask(task,taskId);
+                    Task editing = restApiController.editTask(task, taskId);
                     listTask.set(editingTaskIndex, editing);
                     updateTaskList();
                     System.out.println("Задача успешно обновлена на сервере.");
                     editingTaskIndex = -1;
-
 
                 } else {
                     Task taskNew = restApiController.сreateNewTask(task);
@@ -260,7 +227,6 @@ public class MainController implements Initializable {
             editingTaskIndex = listTask.indexOf(task);
             controller.setTask(task);
 
-
         } else {
             editingTaskIndex = -1;
         }
@@ -268,7 +234,5 @@ public class MainController implements Initializable {
         stage.setTitle("TodayTomorrow!");
         stage.setScene(scene);
         stage.show();
-
     }
-
 }
