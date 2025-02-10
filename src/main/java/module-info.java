@@ -13,6 +13,7 @@ module in.corpore.team.todaytomorrow {
     requires java.desktop;
     requires java.net.http;
     requires com.google.gson;
+    requires java.sql;
 
     opens in.corpore.team.todaytomorrow to javafx.fxml;
     exports in.corpore.team.todaytomorrow;
