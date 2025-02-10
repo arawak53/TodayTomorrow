@@ -4,7 +4,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Database {
+public class Database implements DataStorge{
     private static final String INSERT_TASK_SQL = "INSERT INTO Task (id,date,time,title, description) VALUES (?, ? ,? ,? ,?)";
 
     public Connection connect() {
@@ -29,8 +29,8 @@ public class Database {
         }
         return null;
     }
-
-    public Task saveTask(Task task) {
+    @Override
+    public Task saveTask(Task task, Integer taskId) {
         String insertSQL = "INSERT INTO Task (date, time, title, description) VALUES (?, ?, ?, ?)";
         String updateSQL = "UPDATE Task SET date = ?, time = ?, title = ?, description = ? WHERE id = ?";
         try (Connection conn = connect()) {
@@ -73,6 +73,7 @@ public class Database {
         return task;
     }
 
+    @Override
     public void deleteTaskById(int taskId) {
         String deleteSQL = "DELETE FROM Task WHERE id = ?";
 
@@ -97,7 +98,7 @@ public class Database {
             System.out.println("Ошибка при удалении задачи: " + e.getMessage());
         }
     }
-
+    @Override
     public List<Task> getAllTasks() {
         List<Task> tasks = new ArrayList<>();
         String selectSQL = "SELECT * FROM Task";

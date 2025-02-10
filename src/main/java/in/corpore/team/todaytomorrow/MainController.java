@@ -39,7 +39,7 @@ public class MainController implements Initializable {
     @FXML
     private ListView<String> listTaskView;
 
-    Database dat = new Database();
+    DataStorge dat = new Database();
 
     private int editingTaskIndex = -1;
 
@@ -209,14 +209,14 @@ public class MainController implements Initializable {
                 if (editingTaskIndex >= 0) {
                     int taskId = listTask.get(editingTaskIndex).getId();
                     task.setId(taskId);
-                    Task editing = dat.saveTask(task);
+                    Task editing = dat.saveTask(task,taskId);
                     listTask.set(editingTaskIndex, editing);
                     updateTaskList();
                     System.out.println("Задача успешно обновлена на сервере.");
                     editingTaskIndex = -1;
 
                 } else {
-                    Task taskNew = dat.saveTask(task);
+                    Task taskNew = dat.saveTask(task,task.getId());
                     listTask.add(taskNew);
                     updateTaskList();
                 }
