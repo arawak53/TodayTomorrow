@@ -1,15 +1,18 @@
 package in.corpore.team.todaytomorrow;
+
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
 import javafx.stage.Stage;
+
 import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -38,13 +41,16 @@ public class MainController implements Initializable {
     private Button plus;
     @FXML
     private ListView<String> listTaskView;
+    @FXML
+    private Button openMonth;
+
+    private Task task;
 
     DataStorge dat = new Database();
 
     private int editingTaskIndex = -1;
 
     private int selectedDayOfWeek;
-
 
 
     @Override
@@ -99,6 +105,22 @@ public class MainController implements Initializable {
         plus.setOnAction(actionEvent -> {
             openWindows(false);
         });
+        openMonth.setOnAction(actionEvent -> {
+            try {
+                // Загружаем новый FXML файл и контроллер
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("month.fxml"));
+                Parent root = loader.load(); // загружаем FXML
+
+                // Получаем текущее окно
+                Stage currentStage = (Stage) openMonth.getScene().getWindow();
+
+                // Устанавливаем новое содержимое в окно
+                Scene newScene = new Scene(root);
+                currentStage.setScene(newScene);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
 
         ContextMenu contextMenu = new ContextMenu();
         MenuItem menuItem1 = new MenuItem("delite");
@@ -130,7 +152,7 @@ public class MainController implements Initializable {
                 openWindows(true);
             }
 
-            };
+        };
         menuItem2.setOnAction(hendlerEdit);
 
         EventHandler<ActionEvent> hendlerDuplicate = new EventHandler<ActionEvent>() {
@@ -209,14 +231,14 @@ public class MainController implements Initializable {
                 if (editingTaskIndex >= 0) {
                     int taskId = listTask.get(editingTaskIndex).getId();
                     task.setId(taskId);
-                    Task editing = dat.saveTask(task,taskId);
+                    Task editing = dat.saveTask(task, taskId);
                     listTask.set(editingTaskIndex, editing);
                     updateTaskList();
                     System.out.println("Задача успешно обновлена на сервере.");
                     editingTaskIndex = -1;
 
                 } else {
-                    Task taskNew = dat.saveTask(task,task.getId());
+                    Task taskNew = dat.saveTask(task, task.getId());
                     listTask.add(taskNew);
                     updateTaskList();
                 }

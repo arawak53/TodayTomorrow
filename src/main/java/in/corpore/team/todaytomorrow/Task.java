@@ -37,6 +37,15 @@ public class Task {
         int week = calendar.get(Calendar.DAY_OF_WEEK);
         return week;
     }
+    public int getMonth  (){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        int month = calendar.get(Calendar.MONTH);
+        return month;
+    }
+
+
+
 
     @Override
     public String toString() {
