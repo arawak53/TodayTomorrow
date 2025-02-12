@@ -1,15 +1,20 @@
 package in.corpore.team.todaytomorrow;
+
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+
 import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -38,6 +43,14 @@ public class MainController implements Initializable {
     private Button plus;
     @FXML
     private ListView<String> listTaskView;
+    @FXML
+    private Button openMonth;
+    @FXML
+    private Button cardTask;
+    @FXML
+    private FlowPane taskContainer;
+    @FXML
+    private ScrollPane listTaskView2;
 
     DataStorge dat = new Database();
 
@@ -45,7 +58,7 @@ public class MainController implements Initializable {
 
     private int selectedDayOfWeek;
 
-
+    private Task selectedTask;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -99,12 +112,39 @@ public class MainController implements Initializable {
         plus.setOnAction(actionEvent -> {
             openWindows(false);
         });
+        openMonth.setOnAction(actionEvent -> {
+            try {
+                // Загружаем новый FXML файл и контроллер
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("month.fxml"));
+                Parent root = loader.load(); // загружаем FXML
+
+                // Получаем текущее окно
+                Stage currentStage = (Stage) openMonth.getScene().getWindow();
+
+                // Устанавливаем новое содержимое в окно
+                Scene newScene = new Scene(root);
+                currentStage.setScene(newScene);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        cardTask.setOnAction(actionEvent -> {
+            if (listTaskView.isVisible()){
+                listTaskView.setVisible(false);
+                listTaskView2.setVisible(true);
+            } else {
+                listTaskView.setVisible(true);
+                listTaskView2.setVisible(false);
+            }
+        });
+
 
         ContextMenu contextMenu = new ContextMenu();
         MenuItem menuItem1 = new MenuItem("delite");
         MenuItem menuItem2 = new MenuItem("Edit");
         MenuItem menuItem3 = new MenuItem("Duplicate");
         listTaskView.setContextMenu(contextMenu);
+        listTaskView2.setContextMenu(contextMenu);
         contextMenu.getItems().add(menuItem1);
         contextMenu.getItems().add(menuItem2);
         contextMenu.getItems().add(menuItem3);
@@ -112,10 +152,8 @@ public class MainController implements Initializable {
 
             @Override
             public void handle(ActionEvent actionEvent) {
-                List<Task> filteredTaskList = filterTaskSelectedofWeek();
-                SelectionModel model = listTaskView.getSelectionModel();
-                int selectedIndex = model.getSelectedIndex();
-                Task task = filteredTaskList.get(selectedIndex);
+
+                Task task = getSelectedTask();
                 dat.deleteTaskById(task.id);
                 listTask.remove(task);
                 updateTaskList();
@@ -130,16 +168,14 @@ public class MainController implements Initializable {
                 openWindows(true);
             }
 
-            };
+        };
         menuItem2.setOnAction(hendlerEdit);
 
         EventHandler<ActionEvent> hendlerDuplicate = new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                List<Task> filteredTaskList = filterTaskSelectedofWeek();
-                SelectionModel model = listTaskView.getSelectionModel();
-                int selectedIndex = model.getSelectedIndex();
-                Task task = filteredTaskList.get(selectedIndex);
+                Task task = getSelectedTask();
+                int selectedIndex = listTask.indexOf(task);
                 Task task1 = new Task(task.date, task.time, task.title, task.description);
                 task1.setId(task.getId());  // Устанавливаем id перед дублированием
                 Task dublicateTask = dat.duplicateTaskById(task1);
@@ -155,6 +191,8 @@ public class MainController implements Initializable {
         };
         menuItem3.setOnAction(hendlerDuplicate);
     }
+
+
 
     private List<Task> filterTaskSelectedofWeek() {
         return listTask.stream()
@@ -190,8 +228,52 @@ public class MainController implements Initializable {
                 textList.add(dateInText + " | " + task.time + " | " + task.title + " | " + task.description);
             }
         }
+            taskContainer.getChildren().clear();
+            for (Task task : listTask) {
+                if (task.getDayOfWeek() == selectedDayOfWeek) {
+                    // Создание карточки
+                    VBox card = new VBox(5); // Отступы между элементами
+                    card.setStyle("-fx-border-color: black; -fx-border-radius: 10; -fx-padding: 10; -fx-background-color: white;");
+                    card.setPrefSize(200, 100); // Фиксированный размер карточки
+
+                    // Заголовок задачи
+                    Label title = new Label(task.getTitle());
+                    title.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+
+                    // Описание задачи
+                    Label description = new Label(task.getDescription());
+                    description.setWrapText(true); // Автоматический перенос текста
+
+                    // Дата и время
+                    Label dateTime = new Label(dateFormat.format(task.getDate()) + " | " + task.getTime());
+
+                    // Добавление всех элементов в карточку
+                    card.getChildren().addAll( title, description, dateTime);
+
+                    card.setOnMouseClicked(event -> {
+                        selectedTask = task; // Задача, на которую нажали
+                        System.out.println("Выбрана задача: " + task.getTitle()); // Выводим название выбранной задачи (или другие действия)
+                    });
+                    // Добавление карточки в контейнер
+                    taskContainer.getChildren().add(card);
+                }
+            }
+
         listTaskView.setItems(FXCollections.observableArrayList(textList));
     }
+
+    private Task getSelectedTask (){
+        if (listTaskView.isVisible()){
+            List<Task> filteredTaskList = filterTaskSelectedofWeek();
+            SelectionModel model = listTaskView.getSelectionModel();
+            int selectedIndex = model.getSelectedIndex();
+            Task task = filteredTaskList.get(selectedIndex);
+            return task;
+        }else {
+            return selectedTask;
+        }
+    }
+
 
     private void openWindows(boolean isEdit) {
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("add-task-view.fxml"));
@@ -209,14 +291,14 @@ public class MainController implements Initializable {
                 if (editingTaskIndex >= 0) {
                     int taskId = listTask.get(editingTaskIndex).getId();
                     task.setId(taskId);
-                    Task editing = dat.saveTask(task,taskId);
+                    Task editing = dat.saveTask(task, taskId);
                     listTask.set(editingTaskIndex, editing);
                     updateTaskList();
                     System.out.println("Задача успешно обновлена на сервере.");
                     editingTaskIndex = -1;
 
                 } else {
-                    Task taskNew = dat.saveTask(task,task.getId());
+                    Task taskNew = dat.saveTask(task, task.getId());
                     listTask.add(taskNew);
                     updateTaskList();
                 }
@@ -224,10 +306,7 @@ public class MainController implements Initializable {
             }
         });
         if (isEdit) {
-            List<Task> filteredTaskList = filterTaskSelectedofWeek();
-            SelectionModel model = listTaskView.getSelectionModel();
-            int selectedIndex = model.getSelectedIndex();
-            Task task = filteredTaskList.get(selectedIndex);
+            Task task = getSelectedTask();
             editingTaskIndex = listTask.indexOf(task);
             controller.setTask(task);
 
@@ -239,4 +318,5 @@ public class MainController implements Initializable {
         stage.setScene(scene);
         stage.show();
     }
+
 }

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="511.0" prefWidth="913.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="in.corpore.team.todaytomorrow.MonthController">
+   <children>
+      <Button fx:id="january" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="74.0" text="Январь" />
+      <Button fx:id="february" layoutX="88.0" layoutY="14.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="74.0" text="Февраль" />
+      <Button fx:id="march" layoutX="162.0" layoutY="13.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="74.0" text="Март" />
+      <Button fx:id="april" layoutX="236.0" layoutY="14.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="74.0" text="Апрель" />
+      <Button fx:id="may" layoutX="310.0" layoutY="14.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="74.0" text="Май" />
+      <Button fx:id="june" layoutX="384.0" layoutY="14.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="74.0" text="Июнь" />
+      <Button fx:id="jule" layoutX="458.0" layoutY="14.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="74.0" text="Июль" />
+      <Button fx:id="august" layoutX="532.0" layoutY="14.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="74.0" text="Август" />
+      <Button fx:id="september" layoutX="606.0" layoutY="14.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="74.0" text="Сентябрь" />
+      <Button fx:id="october" layoutX="680.0" layoutY="14.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="74.0" text="Октябрь" />
+      <Button fx:id="november" layoutX="754.0" layoutY="14.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="74.0" text="Ноябрь" />
+      <Button fx:id="december" layoutX="828.0" layoutY="15.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="74.0" text="Декабрь" />
+      <ListView fx:id="listTaskView" layoutX="17.0" layoutY="64.0" prefHeight="380.0" prefWidth="884.0" />
+      <Button fx:id="plus" layoutX="839.0" layoutY="444.0" mnemonicParsing="false" prefHeight="59.0" prefWidth="63.0" text="+">
+         <font>
+            <Font size="27.0" />
+         </font>
+      </Button>
+      <Button fx:id="backToMain" layoutX="17.0" layoutY="444.0" mnemonicParsing="false" prefHeight="59.0" prefWidth="81.0" text="Дни недели" />
+      <Button fx:id="cardTask" layoutX="98.0" layoutY="444.0" mnemonicParsing="false" prefHeight="59.0" prefWidth="106.0" text="Карточки" />
+   </children>
+</AnchorPane>

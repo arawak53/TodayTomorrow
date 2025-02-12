@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<VBox prefHeight="323.0" prefWidth="490.0" spacing="20.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="in.corpore.team.todaytomorrow.MainController">
+<VBox prefHeight="452.0" prefWidth="499.0" spacing="20.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="in.corpore.team.todaytomorrow.MainController">
   <padding>
     <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
   </padding>
@@ -19,18 +19,30 @@
          <Button fx:id="saturday" layoutX="274.0" layoutY="10.0" prefHeight="42.0" prefWidth="66.0" text="СБ" />
          <Button fx:id="sunday" layoutX="288.0" layoutY="10.0" prefHeight="42.0" prefWidth="66.0" text="ВС" />
       </children></HBox>
-   <VBox alignment="TOP_RIGHT" prefHeight="200.0" prefWidth="100.0">
+   <StackPane prefHeight="227.0" prefWidth="450.0">
       <children>
-         <ListView fx:id="listTaskView" prefHeight="144.0" prefWidth="450.0" />
-         <HBox prefHeight="100.0" prefWidth="200.0">
+         <ListView fx:id="listTaskView" prefHeight="386.0" prefWidth="450.0" />
+          <ScrollPane fx:id="listTaskView2" layoutX="22.0" layoutY="73.0" prefHeight="338.0" prefWidth="757.0" visible="false">
+              <content>
+                  <FlowPane fx:id="taskContainer" hgap="10" prefWidth="757.0" vgap="10" />
+              </content>
+          </ScrollPane>
+      </children>
+   </StackPane>
+   <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0">
+      <children>
+         <AnchorPane prefHeight="78.0" prefWidth="288.0">
             <children>
-               <Pane prefHeight="78.0" prefWidth="374.0" />
-               <Button fx:id="plus" alignment="CENTER" mnemonicParsing="false" prefHeight="56.0" prefWidth="69.0" text="+">
-                  <font>
-                     <Font size="26.0" />
-                  </font>
-               </Button>
+               <Button fx:id="openMonth" layoutX="1.0" layoutY="2.0" mnemonicParsing="false" prefHeight="74.0" prefWidth="141.0" text="Задачи по месяцам" />
+               <Button fx:id="cardTask" layoutX="142.0" layoutY="2.0" mnemonicParsing="false" prefHeight="74.0" prefWidth="149.0" text="Задачи в виде карточек" />
             </children>
-         </HBox>
-      </children></VBox>
+         </AnchorPane>
+         <Pane prefHeight="78.0" prefWidth="95.0" />
+         <Button fx:id="plus" alignment="CENTER" mnemonicParsing="false" prefHeight="56.0" prefWidth="69.0" text="+">
+            <font>
+               <Font size="26.0" />
+            </font>
+         </Button>
+      </children>
+   </HBox>
 </VBox>
