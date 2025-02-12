@@ -51,7 +51,7 @@ public class MainController implements Initializable {
     private FlowPane taskContainer;
     @FXML
     private ScrollPane listTaskView2;
-    
+
     DataStorge dat = new Database();
 
     private int editingTaskIndex = -1;
