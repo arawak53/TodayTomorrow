@@ -2,10 +2,8 @@ package in.corpore.team.todaytomorrow;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.stage.Stage;
 
 import java.net.URL;
 import java.text.ParseException;
@@ -28,11 +26,11 @@ public class AddTaskController implements Initializable {
 
 
     public void setTask (Task task) {
-         SimpleDateFormat dateFormate = new SimpleDateFormat("dd.MM.yyyy");
-         fieldDate.getEditor().setText(dateFormate.format(task.date));
-         fieldTime.setText(task.time);
-         fieldTitle.setText(task.title);
-         fieldDescription.setText(task.description);
+        SimpleDateFormat dateFormate = new SimpleDateFormat("dd.MM.yyyy");
+        fieldDate.getEditor().setText(dateFormate.format(task.date));
+        fieldTime.setText(task.time);
+        fieldTitle.setText(task.title);
+        fieldDescription.setText(task.description);
 
     }
 
@@ -46,20 +44,51 @@ public class AddTaskController implements Initializable {
             String description = fieldDescription.getText();
             Task newtask = null;
             try {
-                newtask = new Task(dateFormate.parse(date),time,title,description);
-
-
-
+                newtask = new Task(dateFormate.parse(date), time, title, description);
             } catch (ParseException e) {
                 throw new RuntimeException(e);
             }
-            result.onResult(newtask);
-            buttonSave.getScene().getWindow().hide();
 
+            if (validateTaskData(newtask)) {
+                if (result != null) {
+                    result.onResult(newtask);
+                }
+                Stage stage = (Stage) buttonSave.getScene().getWindow();
+                stage.close();
+            }
         });
 
     }
     public void setTaskResult (TaskResult result) {
         this.result = result;
     }
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+    private boolean validateTaskData(Task task) {
+        if (task.getTitle().trim().isEmpty()) {
+            showAlert("Ошибка", "Заголовок задачи не может быть пустым.");
+            return false;
+        }
+
+        if (task.getDescription().trim().isEmpty()) {
+            showAlert("Ошибка", "Описание задачи не может быть пустым.");
+            return false;
+        }
+
+        if (task.getDate() == null) {
+            showAlert("Ошибка", "Дата задачи не может быть пустой.");
+            return false;
+        }
+        if (task.getTime().trim().isEmpty()){
+            showAlert("Ошибка", "Дата задачи не может быть пустой.");
+            return false;
+        }
+        return true;
+    }
+
 }

@@ -49,8 +49,9 @@ public class MonthController implements Initializable {
     @FXML
     private Button plus;
     @FXML
-    private Button dayWeek;
-
+    private Button backToMain;
+    @FXML
+    private Button cardTask;
 
     private ArrayList<Task> listTask = new ArrayList<>();
 
@@ -144,14 +145,14 @@ public class MonthController implements Initializable {
         plus.setOnAction(actionEvent -> {
             openWindows(false);
         });
-        dayWeek.setOnAction(actionEvent -> {
+        backToMain.setOnAction(actionEvent -> {
             try {
                 // Загружаем новый FXML файл и контроллер
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("main-view.fxml"));
                 Parent root = loader.load(); // загружаем FXML
 
                 // Получаем текущее окно
-                Stage currentStage = (Stage) dayWeek.getScene().getWindow();
+                Stage currentStage = (Stage) backToMain.getScene().getWindow();
 
                 // Устанавливаем новое содержимое в окно
                 Scene newScene = new Scene(root);
@@ -160,7 +161,22 @@ public class MonthController implements Initializable {
                 e.printStackTrace();
             }
         });
+        cardTask.setOnAction(actionEvent -> {
+            try {
+                // Загружаем новый FXML файл и контроллер
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("task-cards.fxml"));
+                Parent root = loader.load(); // загружаем FXML
 
+                // Получаем текущее окно
+                Stage currentStage = (Stage) cardTask.getScene().getWindow();
+
+                // Устанавливаем новое содержимое в окно
+                Scene newScene = new Scene(root);
+                currentStage.setScene(newScene);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
 
 
 

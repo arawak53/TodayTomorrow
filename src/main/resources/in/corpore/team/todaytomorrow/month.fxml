@@ -24,6 +24,7 @@
             <Font size="27.0" />
          </font>
       </Button>
-      <Button fx:id="dayWeek" layoutX="17.0" layoutY="444.0" mnemonicParsing="false" prefHeight="59.0" prefWidth="81.0" text="Дни недели" />
+      <Button fx:id="backToMain" layoutX="17.0" layoutY="444.0" mnemonicParsing="false" prefHeight="59.0" prefWidth="81.0" text="Дни недели" />
+      <Button fx:id="cardTask" layoutX="98.0" layoutY="444.0" mnemonicParsing="false" prefHeight="59.0" prefWidth="106.0" text="Карточки" />
    </children>
 </AnchorPane>
