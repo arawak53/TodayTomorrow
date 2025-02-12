@@ -9,7 +9,7 @@ import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RestApiController {
+public class RestApiController implements DataStorge{
 
     private HttpClient httpClient ;
     private String url;
@@ -25,8 +25,8 @@ public class RestApiController {
 
 
 
-
-    public List<Task> getTask() {
+        @Override
+        public List<Task> getAllTasks() {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url + "tasks"))
                 .GET()
@@ -46,8 +46,8 @@ public class RestApiController {
         }
     }
 
-
-    public void deleteTask(int taskId) {
+    @Override
+    public void deleteTaskById(int taskId) {
         HttpRequest deletedRequest = HttpRequest.newBuilder()
                 .uri(URI.create(url + taskId))
                 .header("Content-Type", "application/json")
@@ -63,7 +63,8 @@ public class RestApiController {
         }
     }
 
-    public Task dublicateTask(Task task) {
+    @Override
+    public Task duplicateTaskById(Task task) {
         String jsonCope = gson.toJson(task);
         HttpRequest requestCopy = HttpRequest.newBuilder()
                 .uri(URI.create(url + "tasks"))
@@ -90,17 +91,20 @@ public class RestApiController {
         return null;
     }
 
+    @Override
+    public Task saveTask(Task task, Integer taskId) {
+        Task processedTask = (taskId != null) ? new Task(task.date, task.time, task.title, task.description) : task;
+        if (taskId != null) {
+            processedTask.id = taskId;
+        }
 
-    public Task editTask(Task task, int taskId) {
-        Task updatedTask = new Task(task.date, task.time, task.title, task.description);
-        updatedTask.id = taskId;
-        String jsonData = gson.toJson(updatedTask);
+        String jsonData = gson.toJson(processedTask);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url + "tasks"))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(jsonData))
                 .build();
-        
+
         try {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
@@ -109,35 +113,12 @@ public class RestApiController {
                 System.out.println("Ответ от сервера: " + response.body());
                 return gson.fromJson(response.body(), Task.class);
             }
-
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
         return null;
     }
 
-    public Task сreateNewTask(Task task) {
-        // Преобразуем объект Task в JSON
-        String jsonData = gson.toJson(task);
-        HttpRequest request1 = HttpRequest.newBuilder()
-                .uri(URI.create(url + "tasks"))
-                .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(jsonData))
-                .build();
-        try {
-            HttpResponse<String> response = httpClient.send(request1, HttpResponse.BodyHandlers.ofString());
-            System.out.println("Код ответа: " + response.statusCode());
-            System.out.println("Ответ от сервера: " + response.body());
-            if (response.statusCode() == 200) {
-                Task createdTask = gson.fromJson(response.body(), Task.class);
-
-                return createdTask;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 }
 
 

@@ -39,15 +39,18 @@ public class MainController implements Initializable {
     @FXML
     private ListView<String> listTaskView;
 
+    DataStorge dat = new Database();
+
     private int editingTaskIndex = -1;
 
     private int selectedDayOfWeek;
 
-    private RestApiController restApiController = new RestApiController();
+
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        List<Task> listTask1 = restApiController.getTask();
+        // ЗАгрузка БД
+        List<Task> listTask1 = dat.getAllTasks();
         listTask.clear();
         listTask.addAll(listTask1);
         updateTaskList();
@@ -113,7 +116,7 @@ public class MainController implements Initializable {
                 SelectionModel model = listTaskView.getSelectionModel();
                 int selectedIndex = model.getSelectedIndex();
                 Task task = filteredTaskList.get(selectedIndex);
-                restApiController.deleteTask(task.id);
+                dat.deleteTaskById(task.id);
                 listTask.remove(task);
                 updateTaskList();
             }
@@ -127,7 +130,7 @@ public class MainController implements Initializable {
                 openWindows(true);
             }
 
-        };
+            };
         menuItem2.setOnAction(hendlerEdit);
 
         EventHandler<ActionEvent> hendlerDuplicate = new EventHandler<ActionEvent>() {
@@ -138,10 +141,10 @@ public class MainController implements Initializable {
                 int selectedIndex = model.getSelectedIndex();
                 Task task = filteredTaskList.get(selectedIndex);
                 Task task1 = new Task(task.date, task.time, task.title, task.description);
-                Task dublicateTask = restApiController.dublicateTask(task1);
-
-                if (task1 != dublicateTask) {
-
+                task1.setId(task.getId());  // Устанавливаем id перед дублированием
+                Task dublicateTask = dat.duplicateTaskById(task1);
+                if (dublicateTask != null) {
+                    // Добавляем дубликат задачи в список
                     listTask.add(selectedIndex, dublicateTask);
                     updateTaskList();
 
@@ -204,15 +207,16 @@ public class MainController implements Initializable {
             @Override
             public void onResult(Task task) {
                 if (editingTaskIndex >= 0) {
-                    int taskId = listTask.get(editingTaskIndex).id;
-                    Task editing = restApiController.editTask(task, taskId);
+                    int taskId = listTask.get(editingTaskIndex).getId();
+                    task.setId(taskId);
+                    Task editing = dat.saveTask(task,taskId);
                     listTask.set(editingTaskIndex, editing);
                     updateTaskList();
                     System.out.println("Задача успешно обновлена на сервере.");
                     editingTaskIndex = -1;
 
                 } else {
-                    Task taskNew = restApiController.сreateNewTask(task);
+                    Task taskNew = dat.saveTask(task,task.getId());
                     listTask.add(taskNew);
                     updateTaskList();
                 }

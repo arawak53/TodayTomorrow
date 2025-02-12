@@ -17,7 +17,13 @@ public class Task {
         this.title = title;
 
     }
-
+    Task (Integer id,Date date, String time, String title, String description ) {
+        this.id = id;
+        this.date = date;
+        this.time = time;
+        this.description = description;
+        this.title = title;
+    }
     public Integer getId() {
         return id;
     }
