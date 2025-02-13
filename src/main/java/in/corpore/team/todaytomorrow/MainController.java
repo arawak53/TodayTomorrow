@@ -143,11 +143,13 @@ public class MainController implements Initializable {
         MenuItem menuItem1 = new MenuItem("delite");
         MenuItem menuItem2 = new MenuItem("Edit");
         MenuItem menuItem3 = new MenuItem("Duplicate");
+        MenuItem menuItem4 = new MenuItem("OpenTask");
         listTaskView.setContextMenu(contextMenu);
         listTaskView2.setContextMenu(contextMenu);
         contextMenu.getItems().add(menuItem1);
         contextMenu.getItems().add(menuItem2);
         contextMenu.getItems().add(menuItem3);
+        contextMenu.getItems().add(menuItem4);
         EventHandler<ActionEvent> hendler = new EventHandler<ActionEvent>() {
 
             @Override
@@ -190,7 +192,25 @@ public class MainController implements Initializable {
             }
         };
         menuItem3.setOnAction(hendlerDuplicate);
+
+
+        EventHandler<ActionEvent> hendlerOpenTask = new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                Task task = getSelectedTask();
+                if (task != null) {
+                    showTaskDetails(task);
+                } else {
+                    System.out.println("Ошибка " +  "Выберите задачу для просмотра.");
+                }
+            }
+        };
+        menuItem4.setOnAction(hendlerOpenTask);
+
     }
+
+
+
 
 
 
@@ -216,6 +236,22 @@ public class MainController implements Initializable {
         sunday.setStyle("");
     }
 
+    private void showTaskDetails(Task task) {
+        try {
+            var loader = new FXMLLoader(getClass().getResource("task_details.fxml"));
+            Parent root = loader.load();
+
+            TaskDetailsController controller = loader.getController();
+            controller.setTask(task);
+
+            Stage stage = new Stage();
+            stage.setTitle("Детальный просмотр задачи");
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     private void updateTaskList() {
         ArrayList<String> textList = new ArrayList<>();
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");

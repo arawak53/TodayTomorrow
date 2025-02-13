@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="434.0" prefWidth="754.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="in.corpore.team.todaytomorrow.TaskDetailsController">
+    <VBox alignment="CENTER" layoutX="4.0" layoutY="8.0" prefHeight="426.0" prefWidth="744.0" spacing="10">
+        <Label prefHeight="2.0" prefWidth="130.0" style="-fx-font-size: 18px; -fx-font-weight: bold;" text="Детали задачи" />
+
+        <HBox spacing="10">
+            <Label text="Дата:" />
+            <Label fx:id="labelDate" />
+        </HBox>
+
+        <HBox spacing="10">
+            <Label text="Время:" />
+            <Label fx:id="labelTime" />
+        </HBox>
+
+        <HBox spacing="10">
+            <Label text="Заголовок:" />
+            <Label fx:id="labelTitle" />
+        </HBox>
+
+        <VBox spacing="10">
+            <Label text="Описание:" />
+            <TextArea fx:id="labelDescription" editable="false" wrapText="true" />
+        </VBox>
+
+        <Button onAction="#closeWindow" text="Закрыть" />
+    </VBox>
+</AnchorPane>
