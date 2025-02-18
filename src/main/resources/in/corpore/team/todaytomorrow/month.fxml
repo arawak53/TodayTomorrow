@@ -6,6 +6,15 @@
 
 <AnchorPane prefHeight="511.0" prefWidth="913.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="in.corpore.team.todaytomorrow.MonthController">
    <children>
+      <StackPane layoutX="18.0" layoutY="60.0" prefHeight="380.0" prefWidth="884.0">
+         <children>
+            <ScrollPane fx:id="listTaskView2" prefHeight="390.0" prefWidth="204.0" visible="false">
+              <content>
+                 <FlowPane fx:id="taskContainer" hgap="10" prefWidth="757.0" vgap="10" />
+              </content>
+            </ScrollPane>
+            <ListView fx:id="listTaskView" prefHeight="380.0" prefWidth="884.0" />
+         </children></StackPane>
       <Button fx:id="january" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="74.0" text="Январь" />
       <Button fx:id="february" layoutX="88.0" layoutY="14.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="74.0" text="Февраль" />
       <Button fx:id="march" layoutX="162.0" layoutY="13.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="74.0" text="Март" />
@@ -18,7 +27,6 @@
       <Button fx:id="october" layoutX="680.0" layoutY="14.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="74.0" text="Октябрь" />
       <Button fx:id="november" layoutX="754.0" layoutY="14.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="74.0" text="Ноябрь" />
       <Button fx:id="december" layoutX="828.0" layoutY="15.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="74.0" text="Декабрь" />
-      <ListView fx:id="listTaskView" layoutX="17.0" layoutY="64.0" prefHeight="380.0" prefWidth="884.0" />
       <Button fx:id="plus" layoutX="839.0" layoutY="444.0" mnemonicParsing="false" prefHeight="59.0" prefWidth="63.0" text="+">
          <font>
             <Font size="27.0" />

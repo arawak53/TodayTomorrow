@@ -10,6 +10,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -54,6 +56,12 @@ public class MonthController implements Initializable {
     private Button backToMain;
     @FXML
     private Button cardTask;
+    @FXML
+    private FlowPane taskContainer;
+    @FXML
+    private ScrollPane listTaskView2;
+
+
     private Task selectedTask;
 
     private ArrayList<Task> listTask = new ArrayList<>();
@@ -169,31 +177,26 @@ public class MonthController implements Initializable {
             }
         });
         cardTask.setOnAction(actionEvent -> {
-            try {
-                // Загружаем новый FXML файл и контроллер
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("task-cards.fxml"));
-                Parent root = loader.load(); // загружаем FXML
-
-                // Получаем текущее окно
-                Stage currentStage = (Stage) cardTask.getScene().getWindow();
-
-                // Устанавливаем новое содержимое в окно
-                Scene newScene = new Scene(root);
-                currentStage.setScene(newScene);
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (listTaskView.isVisible()){
+                listTaskView.setVisible(false);
+                listTaskView2.setVisible(true);
+            } else {
+                listTaskView.setVisible(true);
+                listTaskView2.setVisible(false);
             }
         });
-
-
+        
         ContextMenu contextMenu = new ContextMenu();
         MenuItem menuItem1 = new MenuItem("delite");
         MenuItem menuItem2 = new MenuItem("Edit");
         MenuItem menuItem3 = new MenuItem("Duplicate");
+        MenuItem menuItem4 = new MenuItem("OpenTask");
         listTaskView.setContextMenu(contextMenu);
+        listTaskView2.setContextMenu(contextMenu);
         contextMenu.getItems().add(menuItem1);
         contextMenu.getItems().add(menuItem2);
         contextMenu.getItems().add(menuItem3);
+        contextMenu.getItems().add(menuItem4);
         EventHandler<ActionEvent> handle = new EventHandler<ActionEvent>() {
 
             @Override
@@ -257,6 +260,37 @@ public class MonthController implements Initializable {
             }
         };
         menuItem3.setOnAction(hendlerDuplicate);
+
+        EventHandler<ActionEvent> hendlerOpenTask = new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                Task task = getSelectedTask();
+                if (task != null) {
+                    showTaskDetails(task);
+                } else {
+                    System.out.println("Ошибка " +  "Выберите задачу для просмотра.");
+                }
+            }
+        };
+        menuItem4.setOnAction(hendlerOpenTask);
+
+    }
+
+    private void showTaskDetails(Task task) {
+        try {
+            var loader = new FXMLLoader(getClass().getResource("task_details.fxml"));
+            Parent root = loader.load();
+
+            TaskDetailsController controller = loader.getController();
+            controller.setTask(task);
+
+            Stage stage = new Stage();
+            stage.setTitle("Детальный просмотр задачи");
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void disableButtonStyle() {
@@ -292,7 +326,37 @@ public class MonthController implements Initializable {
                 System.out.println("Ошибка: listTaskView == null");
             }
         }
+        taskContainer.getChildren().clear();
+        for (Task task : listTask) {
+            if (task.getMonth() == selectedMonth) {
+                // Создание карточки
+                VBox card = new VBox(5); // Отступы между элементами
+                card.setStyle("-fx-border-color: black; -fx-border-radius: 10; -fx-padding: 10; -fx-background-color: white;");
+                card.setPrefSize(200, 100); // Фиксированный размер карточки
 
+                // Заголовок задачи
+                Label title = new Label(task.getTitle());
+                title.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+
+                // Описание задачи
+                Label description = new Label(task.getDescription());
+                description.setWrapText(true); // Автоматический перенос текста
+
+                // Дата и время
+                Label dateTime = new Label(dateFormat.format(task.getDate()) + " | " + task.getTime());
+
+                // Добавление всех элементов в карточку
+                card.getChildren().addAll(title, description, dateTime);
+
+                card.setOnMouseClicked(event -> {
+                    selectedTask = task; // Задача, на которую нажали
+                    System.out.println("Выбрана задача: " + task.getTitle()); // Выводим название выбранной задачи (или другие действия)
+                });
+                // Добавление карточки в контейнер
+                taskContainer.getChildren().add(card);
+            }
+        }
+        listTaskView.setItems(FXCollections.observableArrayList(textList));
     }
 
     private List<Task> filterTaskSelectedofWeek() {
