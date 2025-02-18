@@ -3,13 +3,13 @@ package in.corpore.team.todaytomorrow;
 import java.util.List;
 
 public interface DataStorge {
-    List <Task> getAllTasks();
+    void  getAllTasks(GetAllTaskCallback getAllTaskCallback);
 
-    void deleteTaskById(int taskId);
+    void deleteTaskById(int taskId, DeleteTaskCallback deleteTaskCallback);
 
-    Task duplicateTaskById(Task task);
+    void duplicateTaskById(Task task, DublicateTaskCallback dublicateTaskCallback);
 
-    Task saveTask(Task task, Integer taskId);
+    void saveTask(Task task, Integer taskId, SaveTaskCallback saveTaskCallback);
 
 }
 

@@ -1,5 +1,6 @@
 package in.corpore.team.todaytomorrow;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -63,10 +64,15 @@ public class MainController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         // ЗАгрузка БД
-        List<Task> listTask1 = dat.getAllTasks();
-        listTask.clear();
-        listTask.addAll(listTask1);
-        updateTaskList();
+        dat.getAllTasks(new GetAllTaskCallback() {
+            @Override
+            public void onGetAllTask(List<Task> task) {
+                listTask.clear();
+                listTask.addAll(task);
+                updateTaskList();
+            }
+        });
+
         monday.setOnAction(event -> {
             selectedDayOfWeek = 2;
             disableButtonStyle();
@@ -150,18 +156,34 @@ public class MainController implements Initializable {
         contextMenu.getItems().add(menuItem2);
         contextMenu.getItems().add(menuItem3);
         contextMenu.getItems().add(menuItem4);
-        EventHandler<ActionEvent> hendler = new EventHandler<ActionEvent>() {
+        EventHandler<ActionEvent> handle = new EventHandler<ActionEvent>() {
 
             @Override
             public void handle(ActionEvent actionEvent) {
-
-                Task task = getSelectedTask();
-                dat.deleteTaskById(task.id);
-                listTask.remove(task);
-                updateTaskList();
+                final Task task = getSelectedTask();
+                if (task != null) {
+                    dat.deleteTaskById(task.id, new DeleteTaskCallback() {
+                        @Override
+                        public void onTaskDeleted(final boolean success) {
+                            // Обновляем UI в главном (JavaFX) потоке
+                            Platform.runLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (success) {
+                                        listTask.remove(task);
+                                        updateTaskList();
+                                        System.out.println("Задача с id " + task.id + " успешно удалена.");
+                                    } else {
+                                        System.out.println("Ошибка при удалении задачи.");
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
             }
         };
-        menuItem1.setOnAction(hendler);
+        menuItem1.setOnAction(handle);
 
         EventHandler<ActionEvent> hendlerEdit = new EventHandler<ActionEvent>() {
 
@@ -180,15 +202,19 @@ public class MainController implements Initializable {
                 int selectedIndex = listTask.indexOf(task);
                 Task task1 = new Task(task.date, task.time, task.title, task.description);
                 task1.setId(task.getId());  // Устанавливаем id перед дублированием
-                Task dublicateTask = dat.duplicateTaskById(task1);
-                if (dublicateTask != null) {
-                    // Добавляем дубликат задачи в список
-                    listTask.add(selectedIndex, dublicateTask);
-                    updateTaskList();
+                dat.duplicateTaskById(task1, new DublicateTaskCallback() {
+                    @Override
+                    public void onDublicateTask(Task task) {
+                        if (task != null) {
+                            listTask.add(selectedIndex, task);
+                            updateTaskList();
 
-                } else {
-                    System.out.println("Ошибка при получении дубликата!");
-                }
+                        } else {
+                            System.out.println("Ошибка при получении дубликата!");
+                        }
+                    }
+                });
+
             }
         };
         menuItem3.setOnAction(hendlerDuplicate);
@@ -208,11 +234,6 @@ public class MainController implements Initializable {
         menuItem4.setOnAction(hendlerOpenTask);
 
     }
-
-
-
-
-
 
     private List<Task> filterTaskSelectedofWeek() {
         return listTask.stream()
@@ -264,36 +285,36 @@ public class MainController implements Initializable {
                 textList.add(dateInText + " | " + task.time + " | " + task.title + " | " + task.description);
             }
         }
-            taskContainer.getChildren().clear();
-            for (Task task : listTask) {
-                if (task.getDayOfWeek() == selectedDayOfWeek) {
-                    // Создание карточки
-                    VBox card = new VBox(5); // Отступы между элементами
-                    card.setStyle("-fx-border-color: black; -fx-border-radius: 10; -fx-padding: 10; -fx-background-color: white;");
-                    card.setPrefSize(200, 100); // Фиксированный размер карточки
+        taskContainer.getChildren().clear();
+        for (Task task : listTask) {
+            if (task.getDayOfWeek() == selectedDayOfWeek) {
+                // Создание карточки
+                VBox card = new VBox(5); // Отступы между элементами
+                card.setStyle("-fx-border-color: black; -fx-border-radius: 10; -fx-padding: 10; -fx-background-color: white;");
+                card.setPrefSize(200, 100); // Фиксированный размер карточки
 
-                    // Заголовок задачи
-                    Label title = new Label(task.getTitle());
-                    title.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+                // Заголовок задачи
+                Label title = new Label(task.getTitle());
+                title.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
 
-                    // Описание задачи
-                    Label description = new Label(task.getDescription());
-                    description.setWrapText(true); // Автоматический перенос текста
+                // Описание задачи
+                Label description = new Label(task.getDescription());
+                description.setWrapText(true); // Автоматический перенос текста
 
-                    // Дата и время
-                    Label dateTime = new Label(dateFormat.format(task.getDate()) + " | " + task.getTime());
+                // Дата и время
+                Label dateTime = new Label(dateFormat.format(task.getDate()) + " | " + task.getTime());
 
-                    // Добавление всех элементов в карточку
-                    card.getChildren().addAll( title, description, dateTime);
+                // Добавление всех элементов в карточку
+                card.getChildren().addAll( title, description, dateTime);
 
-                    card.setOnMouseClicked(event -> {
-                        selectedTask = task; // Задача, на которую нажали
-                        System.out.println("Выбрана задача: " + task.getTitle()); // Выводим название выбранной задачи (или другие действия)
-                    });
-                    // Добавление карточки в контейнер
-                    taskContainer.getChildren().add(card);
-                }
+                card.setOnMouseClicked(event -> {
+                    selectedTask = task; // Задача, на которую нажали
+                    System.out.println("Выбрана задача: " + task.getTitle()); // Выводим название выбранной задачи (или другие действия)
+                });
+                // Добавление карточки в контейнер
+                taskContainer.getChildren().add(card);
             }
+        }
 
         listTaskView.setItems(FXCollections.observableArrayList(textList));
     }
@@ -327,18 +348,26 @@ public class MainController implements Initializable {
                 if (editingTaskIndex >= 0) {
                     int taskId = listTask.get(editingTaskIndex).getId();
                     task.setId(taskId);
-                    Task editing = dat.saveTask(task, taskId);
-                    listTask.set(editingTaskIndex, editing);
-                    updateTaskList();
-                    System.out.println("Задача успешно обновлена на сервере.");
-                    editingTaskIndex = -1;
-
+                    dat.saveTask(task, taskId, new SaveTaskCallback() {
+                        @Override
+                        public void onTaskSaved(Task task) {
+                            Task editing = task;
+                            listTask.set(editingTaskIndex, editing);
+                            updateTaskList();
+                            System.out.println("Задача успешно обновлена на сервере.");
+                            editingTaskIndex = -1;
+                        }
+                    });
                 } else {
-                    Task taskNew = dat.saveTask(task, task.getId());
-                    listTask.add(taskNew);
-                    updateTaskList();
+                    dat.saveTask(task, task.getId(), new SaveTaskCallback() {
+                        @Override
+                        public void onTaskSaved(Task task) {
+                            Task taskNew = task;
+                            listTask.add(taskNew);
+                            updateTaskList();
+                        }
+                    });
                 }
-
             }
         });
         if (isEdit) {
@@ -356,3 +385,4 @@ public class MainController implements Initializable {
     }
 
 }
+

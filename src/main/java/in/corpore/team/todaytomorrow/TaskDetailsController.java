@@ -6,8 +6,6 @@ import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-
 public class TaskDetailsController {
 
     @FXML
